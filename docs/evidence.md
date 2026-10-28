@@ -53,3 +53,4 @@ REVISION  STATUS      DESCRIPTION
 | `screenshots/04-drill-alert-details-runbook-link.png` | Alert details: expression, `for: 1m`, labels, runbook link |
 | `screenshots/05-recovery-servicedown-resolved.png` | Recovery: ServiceDown resolved, FastBurn draining (value 0.6) |
 | `screenshots/06-eks-controller-manager-false-positive.png` | Known EKS false positive: KubeControllerManagerDown (managed control plane can't be scraped) |
+| `screenshots/07-loki-robot-shop-logs.png` | Loki logs from Fluent Bit with labels `namespace`, `pod`, `service` and `level` (error/info/warning split). The log volume drops roughly 10:52–11:14 during the drill, because with web down the load generator's requests never reach the backends |

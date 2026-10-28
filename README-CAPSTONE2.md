@@ -87,6 +87,7 @@ The full log, with terminal output and the screenshot list, is in [docs/evidence
 
 ![Dashboard](docs/screenshots/02-grafana-golden-signals-dashboard.png)
 ![Alerts firing during drill](docs/screenshots/03-drill-robot-shop-alerts-firing.png)
+![Loki logs](docs/screenshots/07-loki-robot-shop-logs.png)
 
 ## Known limitations
 - Slack receiver is configured, but the webhook was not connected for this submission. Alerts were verified in the Prometheus UI.
