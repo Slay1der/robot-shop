@@ -83,18 +83,15 @@ Example query in Grafana Explore (Loki): {namespace="robot-shop", level="error"}
 4. Written up in [POSTMORTEM.md](POSTMORTEM.md).
 
 ## Evidence
-Screenshots are in docs/screenshots/:
-- pods running
-- storefront
-- Grafana dashboard
-- alerts inactive
-- alert firing
-- dashboard during the outage
-- alert resolved
+The full log, with terminal output and the screenshot list, is in [docs/evidence.md](docs/evidence.md).
+
+![Dashboard](docs/screenshots/02-grafana-golden-signals-dashboard.png)
+![Alerts firing during drill](docs/screenshots/03-drill-robot-shop-alerts-firing.png)
 
 ## Known limitations
 - Slack receiver is configured, but the webhook was not connected for this submission. Alerts were verified in the Prometheus UI.
 - Prometheus retention is 2 days, so the error-budget panel uses a 24h demo window.
 - Loki and Redis use emptyDir, so their data is lost if the pod restarts.
 - Distributed tracing is not set up yet.
+- `KubeControllerManagerDown` and `KubeSchedulerDown` fire on EKS by default because the managed control plane isn't scrapeable. They are false positives and could be disabled with `kubeControllerManager.enabled=false` and `kubeScheduler.enabled=false`.
 - Runs on the shared Capstone 1 cluster (2x m7i-flex.large); destroy it with terraform destroy after grading.
