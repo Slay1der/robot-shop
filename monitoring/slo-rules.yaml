@@ -1,0 +1,42 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: robot-shop-slo
+  namespace: monitoring
+spec:
+  groups:
+    - name: robot-shop-sli
+      interval: 30s
+      rules:
+        - record: robotshop:availability:ratio_5m
+          expr: avg by (service) (avg_over_time(probe_success{app="robot-shop"}[5m]))
+        - record: robotshop:availability:ratio_1h
+          expr: avg by (service) (avg_over_time(probe_success{app="robot-shop"}[1h]))
+        - record: robotshop:latency_seconds:avg_5m
+          expr: avg by (service) (avg_over_time(probe_duration_seconds{app="robot-shop"}[5m]))
+
+    - name: robot-shop-slo-alerts
+      rules:
+        - alert: RobotShopWebErrorBudgetFastBurn
+          expr: |
+            (1 - robotshop:availability:ratio_5m{service="web"}) > (14.4 * 0.01)
+            and
+            (1 - robotshop:availability:ratio_1h{service="web"}) > (14.4 * 0.01)
+          for: 1m
+          labels:
+            severity: critical
+            service: web
+          annotations:
+            summary: "Robot Shop web is burning its error budget 14x too fast"
+            description: "Web availability over the last 5m is {{ $value | humanizePercentage }} failing. The 99% monthly SLO budget would be gone in about 2 days at this rate."
+            runbook_url: "https://github.com/Slay1der/robot-shop/blob/master/RUNBOOK.md#robotshopweberrorbudgetfastburn"
+
+        - alert: RobotShopServiceDown
+          expr: probe_success{app="robot-shop"} == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Robot Shop {{ $labels.service }} is not responding"
+            description: "The blackbox probe for {{ $labels.service }} has failed for over 1 minute."
+            runbook_url: "https://github.com/Slay1der/robot-shop/blob/master/RUNBOOK.md#robotshopservicedown"

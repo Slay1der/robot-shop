@@ -1,0 +1,43 @@
+luaScripts:
+  level.lua: |
+    function set_level(tag, timestamp, record)
+      local msg = string.lower(tostring(record["log"] or record["message"] or ""))
+      if string.find(msg, "error") or string.find(msg, "exception") or string.find(msg, "fatal") then
+        record["level"] = "error"
+      elseif string.find(msg, "warn") then
+        record["level"] = "warn"
+      else
+        record["level"] = "info"
+      end
+      return 1, timestamp, record
+    end
+
+config:
+  filters: |
+    [FILTER]
+        Name                kubernetes
+        Match               kube.*
+        Merge_Log           On
+        Keep_Log            On
+        K8S-Logging.Parser  On
+        K8S-Logging.Exclude On
+
+    [FILTER]
+        Name    grep
+        Match   kube.*
+        Regex   $kubernetes['namespace_name'] ^robot-shop$
+
+    [FILTER]
+        Name    lua
+        Match   kube.*
+        script  /fluent-bit/scripts/level.lua
+        call    set_level
+
+  outputs: |
+    [OUTPUT]
+        Name        loki
+        Match       kube.*
+        Host        loki.monitoring.svc.cluster.local
+        Port        3100
+        labels      job=fluent-bit, namespace=$kubernetes['namespace_name'], pod=$kubernetes['pod_name'], service=$kubernetes['labels']['service'], level=$level
+        line_format json

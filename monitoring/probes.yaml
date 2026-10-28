@@ -1,0 +1,71 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: robot-shop-web
+  namespace: monitoring
+spec:
+  interval: 15s
+  module: http_2xx
+  prober:
+    url: blackbox-prometheus-blackbox-exporter.monitoring.svc:9115
+  targets:
+    staticConfig:
+      static:
+        - http://web.robot-shop.svc:8080/
+      labels:
+        app: robot-shop
+        service: web
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: robot-shop-catalogue
+  namespace: monitoring
+spec:
+  interval: 15s
+  module: http_2xx
+  prober:
+    url: blackbox-prometheus-blackbox-exporter.monitoring.svc:9115
+  targets:
+    staticConfig:
+      static:
+        - http://catalogue.robot-shop.svc:8080/health
+      labels:
+        app: robot-shop
+        service: catalogue
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: robot-shop-cart
+  namespace: monitoring
+spec:
+  interval: 15s
+  module: http_2xx
+  prober:
+    url: blackbox-prometheus-blackbox-exporter.monitoring.svc:9115
+  targets:
+    staticConfig:
+      static:
+        - http://cart.robot-shop.svc:8080/health
+      labels:
+        app: robot-shop
+        service: cart
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: robot-shop-payment
+  namespace: monitoring
+spec:
+  interval: 15s
+  module: http_2xx
+  prober:
+    url: blackbox-prometheus-blackbox-exporter.monitoring.svc:9115
+  targets:
+    staticConfig:
+      static:
+        - http://payment.robot-shop.svc:8080/health
+      labels:
+        app: robot-shop
+        service: payment

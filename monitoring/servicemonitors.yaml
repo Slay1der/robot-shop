@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: robot-shop-business-metrics
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames:
+      - robot-shop
+  selector:
+    matchExpressions:
+      - key: service
+        operator: In
+        values: [cart, payment]
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
